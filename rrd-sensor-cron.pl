@@ -4,10 +4,6 @@ use RRDs;
 
 my $datafolder="/data";
 
-#my $time=
-
-#rrd_sensor();
-#exit;
 cron(300,\&rrd_sensor);
 
 sub rrd_sensor {
@@ -21,7 +17,6 @@ sub rrd_sensor {
        my $value=$3;
        if ($type eq "input") {
          my $id=sprintf("%s_%s_%s",$chip,$dev,$sensor);
-#         print "$id=$value\n";
          if (! -f "$datafolder/$id.rrd") {
             initRRD("$datafolder/$id.rrd");
          }        
@@ -87,9 +82,10 @@ sub cron {
   my $proc=shift;
   my $title=$0;
   my $now=time();
+  my $running=1;
   my $next=$now+($timediff- ($now % $timediff));  #Set to 0 for first run of now
   $0=sprintf("%s - %s",$title,"First run at ".datetime($next));
-  while (getppid>1) { #Check that parent is alive..
+  while ($running) { #Check that parent is alive..
     $now=time();
     if ($now>=$next) {
       $0=sprintf("%s - %s",$title,"Start run at ".datetime($now));
